@@ -3,8 +3,8 @@
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <TargetFramework>net5.0</TargetFramework>
-    <RootNamespace>Encoo.ProcessMining.DB</RootNamespace>
-    <AssemblyName>Encoo.ProcessMining.DB</AssemblyName>
+    <RootNamespace>Encoo.ProcessMining.Model</RootNamespace>
+    <AssemblyName>Encoo.ProcessMining.Model</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>

@@ -1,0 +1,1 @@
+﻿Scaffold-DbContext -Connection "Data Source=.\SQLExpress;Initial Catalog=ProcessMiningDatabase;Integrated Security=true;MultipleActiveResultSets=true" -Provider Microsoft.EntityFrameworkCore.SqlServer -Project DataContext -OutputDir Model -ContextDir . -Force

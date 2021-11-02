@@ -24,6 +24,7 @@
     <TargetDatabaseSet>True</TargetDatabaseSet>
     <GenerateCreateScript>True</GenerateCreateScript>
     <TargetFrameworkProfile />
+    <DacApplicationName>ProcessMiningDatabase</DacApplicationName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <OutputPath>bin\Release\</OutputPath>
@@ -47,6 +48,7 @@
     <DefineTrace>true</DefineTrace>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <SqlTargetName>ProcessMiningDatabase</SqlTargetName>
   </PropertyGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">11.0</VisualStudioVersion>
@@ -58,10 +60,14 @@
   <Import Condition="'$(SQLDBExtensionsRefPath)' == ''" Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
   <ItemGroup>
     <Folder Include="Properties" />
+    <Folder Include="Tables" />
   </ItemGroup>
   <ItemGroup>
-    <Build Include="ActivityDefinition.sql" />
-    <Build Include="ActivityDetectionRule.sql" />
-    <Build Include="DataRecord.sql" />
+    <Build Include="Tables\ActivityDefinition.sql" />
+    <Build Include="Tables\DataRecord.sql" />
+    <Build Include="Tables\ActivityInstance.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <Build Include="Tables\ActivityDetectionRule.sql" />
   </ItemGroup>
 </Project>

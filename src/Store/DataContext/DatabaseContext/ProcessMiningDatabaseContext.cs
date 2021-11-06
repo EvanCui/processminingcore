@@ -45,8 +45,6 @@ namespace Encoo.ProcessMining.DataContext.DatabaseContext
 
                 entity.HasIndex(e => new { e.Priority, e.Id }, "IX_ActivityDetectionRule_Priority_Id");
 
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
                 entity.Property(e => e.Name).HasMaxLength(50);
 
                 entity.Property(e => e.RuleData).HasColumnType("text");
@@ -63,8 +61,6 @@ namespace Encoo.ProcessMining.DataContext.DatabaseContext
                 entity.ToTable("ActivityInstance");
 
                 entity.HasIndex(e => new { e.ProcessSubject, e.Time, e.Id }, "IX_ActivityInstance_ProcessSubject_Time_Id");
-
-                entity.Property(e => e.Id).ValueGeneratedNever();
 
                 entity.Property(e => e.Actor).HasMaxLength(50);
 
@@ -97,13 +93,11 @@ namespace Encoo.ProcessMining.DataContext.DatabaseContext
 
                 entity.HasIndex(e => new { e.IsDeleted, e.IsTemplateDetected, e.IsActivityDetected, e.KnowledgeWatermark }, "IX_DataRecord_IsDeleted_IsTemplateDetected_IsActivityDetected_KnowledgeWatermark");
 
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
                 entity.Property(e => e.Content).HasColumnType("text");
 
-                entity.Property(e => e.Parameters).HasMaxLength(1000);
+                entity.Property(e => e.Parameters).HasColumnType("text");
 
-                entity.Property(e => e.Template).HasMaxLength(1000);
+                entity.Property(e => e.Template).HasColumnType("text");
             });
 
             OnModelCreatingPartial(modelBuilder);

@@ -10,7 +10,7 @@ public class KnowledgeBaseDataContext : IKnowledgeBaseDataContext
 
     private DateTimeOffset lastReloadTime = DateTimeOffset.MinValue;
     // TODO: config
-    private TimeSpan reloadInterval = TimeSpan.FromSeconds(30);
+    private readonly TimeSpan reloadInterval = TimeSpan.FromSeconds(30);
     private bool reloadNeeded = true;
 
     private KnowledgeBase knowledgeBase = null;

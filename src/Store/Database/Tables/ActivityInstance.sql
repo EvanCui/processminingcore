@@ -1,6 +1,6 @@
 ﻿CREATE TABLE [dbo].[ActivityInstance]
 (
-	[Id] BIGINT NOT NULL PRIMARY KEY, 
+	[Id] BIGINT IDENTITY(1,1) NOT NULL PRIMARY KEY, 
     [DataRecordId] BIGINT NOT NULL, 
     [ActivityDefinitionId] BIGINT NOT NULL, 
     [DetectionRuleId] BIGINT NOT NULL, 

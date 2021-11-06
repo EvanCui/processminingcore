@@ -13,7 +13,7 @@ namespace Encoo.ProcessMining.DataContext.Model
         }
 
         public long Id { get; set; }
-        public long? KnowledgeWatermark { get; set; }
+        public long KnowledgeWatermark { get; set; }
         public string Content { get; set; }
         public DateTimeOffset? Time { get; set; }
         public string Template { get; set; }

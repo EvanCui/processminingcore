@@ -15,7 +15,7 @@ class ActivityDetectorsManager : IActivityDetectorsManager
         if (rebuild)
         {
             this.detectors = definitions
-                .Select(d => (Id: d.Id, Detector: this.activityDetectorFactory.CreateActivityDetector(d)))
+                .Select(d => (d.Id, Detector: this.activityDetectorFactory.CreateActivityDetector(d)))
                 .ToDictionary(d => d.Id, d => d.Detector);
         }
         else

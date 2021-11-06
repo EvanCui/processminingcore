@@ -4,16 +4,16 @@ using Encoo.ProcessMining.Utilities;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Encoo.ProcessMining.Engine;
 
 public class ActivityDetectionEngine
 {
     private readonly ILogger<ActivityDetectionEngine> logger;
+    private readonly IServiceProvider serviceProvider;
     private readonly ActivityDetectionEngineOptions options;
     private readonly IKnowledgeBaseDataContext knowledgeBaseContext;
-    private readonly IDataRecordDataContext dataRecordDataContext;
-    private readonly IActivityInstanceDataContext activityInstanceDataContext;
     private readonly IActivityDetectorsManager detectorsManager = new ActivityDetectorsManager();
     private KnowledgeBase knowledgeBase;
     private TaskCompletionSource triggerExecute = new();
@@ -22,15 +22,13 @@ public class ActivityDetectionEngine
     public ActivityDetectionEngine(
         ILogger<ActivityDetectionEngine> logger,
         IOptions<ActivityDetectionEngineOptions> options,
-        IKnowledgeBaseDataContext knowledgeBaseContext,
-        IDataRecordDataContext dataRecordDataContext,
-        IActivityInstanceDataContext activityInstanceDataContext)
+        IServiceProvider serviceProvider,
+        IKnowledgeBaseDataContext knowledgeBaseContext)
     {
         this.logger = logger;
+        this.serviceProvider = serviceProvider;
         this.options = options.Value;
         this.knowledgeBaseContext = knowledgeBaseContext;
-        this.dataRecordDataContext = dataRecordDataContext;
-        this.activityInstanceDataContext = activityInstanceDataContext;
     }
 
     public void TriggerExecute()
@@ -45,7 +43,9 @@ public class ActivityDetectionEngine
         return Task.CompletedTask;
     }
 
+#pragma warning disable IDE0060 // Remove unused parameter
     public Task StopAsync(CancellationToken token)
+#pragma warning restore IDE0060 // Remove unused parameter
     {
         this.cancelExecute.Cancel();
         return Task.CompletedTask;
@@ -58,6 +58,8 @@ public class ActivityDetectionEngine
         while (!token.IsCancellationRequested)
         {
             var trigger = this.triggerExecute;
+            var scope = this.serviceProvider.CreateScope();
+            var waitSeconds = 0;
 
             try
             {
@@ -66,7 +68,9 @@ public class ActivityDetectionEngine
 
                 this.detectorsManager.Initialize(this.knowledgeBase.FlattenedDefinitions);
 
-                var records = await this.dataRecordDataContext.LoadDataRecordToDetectAsync(
+                var dataRecordDataContext = scope.ServiceProvider.GetRequiredService<IDataRecordDataContext>();
+
+                var records = await dataRecordDataContext.LoadDataRecordToDetectAsync(
                     this.knowledgeBase.Watermark,
                     this.options.BatchLoadingSize,
                     token).ToListAsync(token);
@@ -79,22 +83,27 @@ public class ActivityDetectionEngine
 
                 var results = await Task.WhenAll(recordGroups.Select(recordGroup => Task.Run(() => this.Detect(recordGroup))));
 
-                await this.SaveDetectionResultsAsync(results.SelectMany(r => r), token);
+                var activityInstanceDataContext = scope.ServiceProvider.GetRequiredService<IActivityInstanceDataContext>();
+                await activityInstanceDataContext.SaveActivityInstancesAsync(results.SelectMany(r => r).Where(r => r.ActivityInstance != null).Select(r => r.ActivityInstance), token);
 
-                await Task.WhenAny(Task.Delay(TimeSpan.FromSeconds(this.options.DetectionIntervalSeconds), token), trigger.Task);
+                if (records.Count == 0)
+                {
+                    waitSeconds = this.options.DetectionIntervalSeconds;
+                }
             }
             catch (Exception ex)
             {
                 this.logger.LogError("Exception happened {ex}", ex);
                 forceReload = true;
-                await Task.WhenAny(Task.Delay(TimeSpan.FromSeconds(this.options.ErrorRetryIntervalSeconds), token), trigger.Task);
+                waitSeconds = this.options.ErrorRetryIntervalSeconds;
             }
-        }
-    }
+            finally
+            {
+                scope.Dispose();
+            }
 
-    private async Task SaveDetectionResultsAsync(IEnumerable<ActivityDetectionResult> results, CancellationToken token)
-    {
-        await this.activityInstanceDataContext.SaveActivityInstancesAsync(results.Select(r => r.ActivityInstance), token);
+            await Task.WhenAny(Task.Delay(TimeSpan.FromSeconds(waitSeconds), token), trigger.Task);
+        }
     }
 
     private ActivityDetectionResult Detect(DataRecord record)
@@ -103,7 +112,7 @@ public class ActivityDetectionEngine
         Debug.Assert(record.IsTemplateDetected, $"Record is not template detected {record}");
         Debug.Assert(!record.IsActivityDetected, $"Record is activity detected {record}");
 
-        long recordKnowledgeWatermark = record.KnowledgeWatermark ?? 0;
+        long recordKnowledgeWatermark = record.KnowledgeWatermark;
 
         if (recordKnowledgeWatermark < this.knowledgeBase.Watermark)
         {

@@ -1,28 +1,22 @@
-﻿using Encoo.ProcessMining.DB.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Encoo.ProcessMining.DataContext.Model;
 
-namespace Encoo.ProcessMining.Engine
+namespace Encoo.ProcessMining.Engine;
+
+class DefaultActivityDetectorFactory : IActivityDetectorFactory
 {
-    class DefaultActivityDetectorFactory : IActivityDetectorFactory
+    private readonly IMatcherFactory matcherFactory = new DefaultMatcherFactory();
+    private readonly IExtractorFactory extractorFactory = new DefaultExtractorFactory();
+
+    public IActivityDetector CreateActivityDetector(ActivityDefinition definition)
     {
-        private readonly IMatcherFactory matcherFactory = new DefaultMatcherFactory();
-        private readonly IExtractorFactory extractorFactory = new DefaultExtractorFactory();
+        var ruleOptions = definition.ActivityDetectionRule.RuleOptions;
 
-        public IActivityDetector CreateActivityDetector(ActivityDefinition definition)
-        {
-            var ruleData = definition.Rule.Data;
-
-            return new DefaultActivityDetector(
-                definition.Rule.Id.Value,
-                definition.Id.Value,
-                this.matcherFactory.CreateMatcher(ruleData.Matching),
-                this.extractorFactory.CreateSubjectExtractor(ruleData.SubjectExtraction),
-                this.extractorFactory.CreateActorExtractor(ruleData.ActorExtraction),
-                this.extractorFactory.CreateTimeExtractor(ruleData.TimeExtraction));
-        }
+        return new DefaultActivityDetector(
+            definition.ActivityDetectionRule.Id,
+            definition.Id,
+            this.matcherFactory.CreateMatcher(ruleOptions.Matching),
+            this.extractorFactory.CreateSubjectExtractor(ruleOptions.SubjectExtraction),
+            this.extractorFactory.CreateActorExtractor(ruleOptions.ActorExtraction),
+            this.extractorFactory.CreateTimeExtractor(ruleOptions.TimeExtraction));
     }
 }

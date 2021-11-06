@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace Encoo.ProcessMining.Engine;
 
-namespace Encoo.ProcessMining.Engine
+public class ActivityDetectionEngineOptions
 {
-    public record ActivityDetectionEngineOptions(
-        int BatchLoadingSize = 1000,
-        int MaxWorkItemSize = 10);
+    public int BatchLoadingSize { get; set; } = 1000;
+    public int MaxWorkItemSize { get; set; } = 10;
+    public int DetectionIntervalSeconds { get; set; } = 60;
+    public int ErrorRetryIntervalSeconds { get; set; } = 5;
+
 }

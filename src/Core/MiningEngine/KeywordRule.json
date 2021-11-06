@@ -1,0 +1,84 @@
+{
+  "Matching": {
+    "Type": "Keyword",
+    "Keyword": {
+      "Keywords": [
+        "Word1",
+        "Word2"
+      ],
+      "Operator": "Or"
+    },
+    "TemplateParameter": {
+      "Template": "Template String",
+      "Parameters": {
+        "0": "param0",
+        "1": "param1"
+      }
+    },
+    "Regex": {
+      "Pattern": "RegexPattern(\\w+)",
+      "Options": [
+        "IgnoreCase",
+        "Multiline"
+      ]
+    },
+    "Custom": {
+      "Whatever": "values"
+    }
+  },
+  "SubjectExtraction": {
+    "Template": "Subject {0} {1} {2}",
+    "Tokens": [
+      {
+        "Type": "TemplateParameter",
+        "TemplateParameter": {
+          "Index": 0
+        }
+      },
+      {
+        "Type": "Keyword",
+        "Keyword": {
+          "Start": "start pattern",
+          "End": "end pattern"
+        }
+      },
+      {
+        "Type": "Regex",
+        "Regex": {
+          "Index": 2
+        }
+      }
+    ]
+  },
+  "ActorExtraction": {
+    "Template": "Actor {0} {1} {2}",
+    "Tokens": [
+      {
+        "Type": "TemplateParameter",
+        "TemplateParameter": {
+          "Index": 0
+        }
+      },
+      {
+        "Type": "Keyword",
+        "Keyword": {
+          "Start": "start pattern",
+          "End": "end pattern"
+        }
+      },
+      {
+        "Type": "Regex",
+        "Regex": {
+          "Index": 2
+        }
+      }
+    ]
+  },
+  "TimeExtraction": {
+    "Tokens": [
+      {
+        "Type": "Time"
+      }
+    ]
+  }
+}

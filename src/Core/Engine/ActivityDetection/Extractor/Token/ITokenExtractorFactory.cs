@@ -1,14 +1,8 @@
-﻿using Encoo.ProcessMining.DB.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Encoo.ProcessMining.DataContext.Model;
 
-namespace Encoo.ProcessMining.Engine
+namespace Encoo.ProcessMining.Engine;
+
+interface ITokenExtractorFactory
 {
-    interface ITokenExtractorFactory
-    {
-        ITokenExtractor CreateTokenExtractor(TokenExtractionOptions options);
-    }
+    ITokenExtractor CreateTokenExtractor(TokenExtractionOptions options);
 }

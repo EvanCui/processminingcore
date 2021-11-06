@@ -1,27 +1,20 @@
-﻿using Encoo.ProcessMining.DB.Entities;
+﻿using Encoo.ProcessMining.DataContext.Model;
 using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Encoo.ProcessMining.Engine
+namespace Encoo.ProcessMining.Engine;
+
+class CustomMatcher : IMatcher
 {
-    class CustomMatcher : IMatcher
+    private readonly JObject options;
+
+    public CustomMatcher(JObject options)
     {
-        private readonly JObject options;
+        this.options = options;
+    }
 
-        public CustomMatcher(JObject options)
-        {
-            this.options = options;
-        }
-
-        public (bool Success, string[] Tokens) Match(ContentData contentData)
-        {
-            Debug.Assert(this.options != null);
-            throw new NotImplementedException();
-        }
+    public (bool Success, string[] Tokens) Match(ContentData contentData)
+    {
+        Debug.Assert(this.options != null);
+        throw new NotImplementedException();
     }
 }

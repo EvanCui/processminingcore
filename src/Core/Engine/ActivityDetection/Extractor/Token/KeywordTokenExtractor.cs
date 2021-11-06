@@ -1,40 +1,34 @@
-﻿using Encoo.ProcessMining.DB.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Encoo.ProcessMining.DataContext.Model;
 
-namespace Encoo.ProcessMining.Engine
+namespace Encoo.ProcessMining.Engine;
+
+class KeywordTokenExtractor : ITokenExtractor
 {
-    class KeywordTokenExtractor : ITokenExtractor
+    private readonly KeywordExtractionOptions options;
+
+    public KeywordTokenExtractor(KeywordExtractionOptions options)
     {
-        private readonly KeywordExtractionOptions options;
+        this.options = options;
+    }
 
-        public KeywordTokenExtractor(KeywordExtractionOptions options)
+    public object Extract(ContentData contentData, string[] matchingTokens)
+    {
+        int start = this.options.Start switch
         {
-            this.options = options;
-        }
+            null or "" => 0,
+            var s => contentData.Content.IndexOf(s),
+        };
 
-        public object Extract(ContentData contentData, string[] matchingTokens)
+        if (start == -1) { return null; }
+
+        int end = this.options.End switch
         {
-            int start = this.options.Start switch
-            {
-                null or "" => 0,
-                var s => contentData.Content.IndexOf(s),
-            };
+            null or "" => contentData.Content.Length,
+            var s => contentData.Content.IndexOf(s),
+        };
 
-            if (start == -1) { return null; }
+        if (end <= start) { return null; }
 
-            int end = this.options.End switch
-            {
-                null or "" => contentData.Content.Length,
-                var s => contentData.Content.IndexOf(s),
-            };
-
-            if (end <= start) { return null; }
-
-            return contentData.Content[start..end];
-        }
+        return contentData.Content[start..end];
     }
 }

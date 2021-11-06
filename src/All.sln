@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31313.79
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31825.309
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "Database", "store\database\Database.sqlproj", "{7F2B949E-7B13-4A1C-848C-5BA6C45F795E}"
 EndProject
@@ -20,7 +20,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.gitignore = .gitignore
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataContext", "Store\DataContext\DataContext.csproj", "{40C26A62-F804-44DC-A259-BF1942855EA7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataContext", "Store\DataContext\DataContext.csproj", "{40C26A62-F804-44DC-A259-BF1942855EA7}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Service", "Core\MiningEngine\Service.csproj", "{D85F6E89-65DB-4AF4-A7FC-B451D5F2CC45}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{02213200-1816-472D-ADF6-18E732C00B29}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Utilities", "Common\Utilities\Utilities.csproj", "{4884976D-B415-4584-81B1-57E3BEF4C3F0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -46,6 +52,14 @@ Global
 		{40C26A62-F804-44DC-A259-BF1942855EA7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{40C26A62-F804-44DC-A259-BF1942855EA7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{40C26A62-F804-44DC-A259-BF1942855EA7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D85F6E89-65DB-4AF4-A7FC-B451D5F2CC45}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D85F6E89-65DB-4AF4-A7FC-B451D5F2CC45}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D85F6E89-65DB-4AF4-A7FC-B451D5F2CC45}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D85F6E89-65DB-4AF4-A7FC-B451D5F2CC45}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4884976D-B415-4584-81B1-57E3BEF4C3F0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4884976D-B415-4584-81B1-57E3BEF4C3F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4884976D-B415-4584-81B1-57E3BEF4C3F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4884976D-B415-4584-81B1-57E3BEF4C3F0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -55,6 +69,8 @@ Global
 		{BB08EBA2-F080-4DA5-9DEF-71C9C8D4E1BD} = {E7554E20-62F4-44D1-AF8A-0B6D9914B53D}
 		{57E95850-1F28-4511-9AC6-956838497640} = {8CC3D8F0-3FB2-41F2-8145-3980F9A53F54}
 		{40C26A62-F804-44DC-A259-BF1942855EA7} = {8CC3D8F0-3FB2-41F2-8145-3980F9A53F54}
+		{D85F6E89-65DB-4AF4-A7FC-B451D5F2CC45} = {E7554E20-62F4-44D1-AF8A-0B6D9914B53D}
+		{4884976D-B415-4584-81B1-57E3BEF4C3F0} = {02213200-1816-472D-ADF6-18E732C00B29}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A9B7FBF3-78EA-4656-B1BF-636E9E673332}

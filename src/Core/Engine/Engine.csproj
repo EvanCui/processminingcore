@@ -1,10 +1,10 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
+    <OutputType>Library</OutputType>
     <TargetFramework>net6.0</TargetFramework>
-    <RootNamespace>Encoo.ProcessMining.Engine</RootNamespace>
-    <AssemblyName>Encoo.ProcessMining.Engine</AssemblyName>
+    <RootNamespace>Encoo.ProcessMining.$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
+    <AssemblyName>Encoo.ProcessMining.$(MSBuildProjectName)</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,9 +13,11 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="System.Linq.Async" Version="5.0.0" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Common\Utilities\Utilities.csproj" />
     <ProjectReference Include="..\..\Store\DataContext\DataContext.csproj" />
     <ProjectReference Include="..\..\Store\Model\Model.csproj" />
   </ItemGroup>

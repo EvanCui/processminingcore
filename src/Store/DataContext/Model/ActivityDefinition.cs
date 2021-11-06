@@ -9,7 +9,6 @@ namespace Encoo.ProcessMining.DataContext.Model
     {
         public ActivityDefinition()
         {
-            ActivityDetectionRules = new HashSet<ActivityDetectionRule>();
             ActivityInstances = new HashSet<ActivityInstance>();
         }
 
@@ -17,7 +16,7 @@ namespace Encoo.ProcessMining.DataContext.Model
         public string Name { get; set; }
         public string Details { get; set; }
 
-        public virtual ICollection<ActivityDetectionRule> ActivityDetectionRules { get; set; }
+        public virtual ActivityDetectionRule ActivityDetectionRule { get; set; }
         public virtual ICollection<ActivityInstance> ActivityInstances { get; set; }
     }
 }

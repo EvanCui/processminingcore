@@ -1,25 +1,19 @@
-﻿using Encoo.ProcessMining.DB.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Encoo.ProcessMining.DataContext.Model;
 
-namespace Encoo.ProcessMining.Engine
+namespace Encoo.ProcessMining.Engine;
+
+class RegexTokenExtractor : ITokenExtractor
 {
-    class RegexTokenExtractor : ITokenExtractor
+    private readonly RegexExtractionOptions options;
+
+    public RegexTokenExtractor(RegexExtractionOptions options)
     {
-        private readonly RegexExtractionOptions options;
+        this.options = options;
+    }
 
-        public RegexTokenExtractor(RegexExtractionOptions options)
-        {
-            this.options = options;
-        }
-
-        public object Extract(ContentData contentData, string[] matchingTokens)
-        {
-            // TODO: deal with the index overflow.
-            return matchingTokens[this.options.Index];
-        }
+    public object Extract(ContentData contentData, string[] matchingTokens)
+    {
+        // TODO: deal with the index overflow.
+        return matchingTokens[this.options.Index];
     }
 }

@@ -10,7 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // data contexts
 builder.Services.AddDbContext<ProcessMiningDatabaseContext>(o => o.UseSqlServer(builder.Configuration.GetConnectionString("SqlServer")));
-builder.Services.AddScoped<IKnowledgeBaseDataContext, KnowledgeBaseDataContext>();
+builder.Services.AddSingleton<IKnowledgeBaseDataContext, KnowledgeBaseDataContext>();
 builder.Services.AddScoped<IDataRecordDataContext, DataRecordDataContext>();
 builder.Services.AddScoped<IActivityInstanceDataContext, ActivityInstanceDataContext>();
 

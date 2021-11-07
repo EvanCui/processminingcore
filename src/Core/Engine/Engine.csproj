@@ -22,4 +22,8 @@
     <ProjectReference Include="..\..\Store\Model\Model.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="ActivityDetection\KnowledgeBase\" />
+  </ItemGroup>
+
 </Project>

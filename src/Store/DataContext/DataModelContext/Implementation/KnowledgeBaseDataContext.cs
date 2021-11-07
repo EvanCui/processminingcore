@@ -57,4 +57,9 @@ public class KnowledgeBaseDataContext : IKnowledgeBaseDataContext
         await this.context.SaveChangesAsync(token);
         this.reloadNeeded = true;
     }
+
+    public Task<long> GetKnowledgeWatermarkAsync(CancellationToken token)
+    {
+        return this.context.ActivityDefinitions.MaxAsync(d => d.Id, token);
+    }
 }

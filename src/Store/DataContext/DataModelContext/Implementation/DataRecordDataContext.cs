@@ -13,6 +13,15 @@ public class DataRecordDataContext : IDataRecordDataContext
         this.databaseContext = databaseContext;
     }
 
+    public async Task DeleteDataRecordsAsync(long[] recordIds, CancellationToken token)
+    {
+        if (recordIds != null)
+        {
+            this.databaseContext.DataRecords.RemoveRange(recordIds.Select(id => new DataRecord { Id = id }));
+            await this.databaseContext.SaveChangesAsync(token);
+        }
+    }
+
     public IAsyncEnumerable<DataRecord> LoadDataRecordToDetectAsync(long currentKnowledgeWatermark, int batchSize, CancellationToken token) => this.databaseContext.DataRecords
         .Where(d => d.IsDeleted == false && d.IsTemplateDetected == true && d.IsActivityDetected == false && d.KnowledgeWatermark < currentKnowledgeWatermark)
         .Take(batchSize)

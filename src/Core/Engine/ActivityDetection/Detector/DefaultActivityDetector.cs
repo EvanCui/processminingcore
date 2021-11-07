@@ -33,14 +33,24 @@ class DefaultActivityDetector : IActivityDetector
         (var success, var tokens) = this.matcher.Match(contentData);
         if (!success) return null;
 
-        dataRecord.IsActivityDetected = true;
+        var subject = this.subjectExtractor.Extract(contentData, tokens);
+        if (string.IsNullOrEmpty(subject))
+        {
+            dataRecord.IsDeleted = true;
+            dataRecord.IsActivityDetected = false;
+        }
+        else
+        {
+            dataRecord.IsDeleted = false;
+            dataRecord.IsActivityDetected = true;
+        }
 
         return new(
             dataRecord,
             new ActivityInstance(
                 this.actorExtractor.Extract(contentData, tokens),
                 this.timeExtractor.Extract(contentData, tokens),
-                this.subjectExtractor.Extract(contentData, tokens),
+                subject,
                 this.ruleId,
                 this.activityDefinitionId,
                 dataRecord.Id));

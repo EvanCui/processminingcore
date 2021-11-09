@@ -14,6 +14,7 @@ namespace Encoo.ProcessMining.DataContext.Model
         public string ProcessSubject { get; set; }
         public DateTimeOffset? Time { get; set; }
         public string Actor { get; set; }
+        public long? ProcessInstanceId { get; set; }
 
         public virtual ActivityDefinition ActivityDefinition { get; set; }
         public virtual DataRecord DataRecord { get; set; }

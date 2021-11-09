@@ -61,11 +61,14 @@
   <ItemGroup>
     <Folder Include="Properties" />
     <Folder Include="Tables" />
+    <Folder Include="StoredProcedures" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="Tables\ActivityDefinition.sql" />
     <Build Include="Tables\DataRecord.sql" />
     <Build Include="Tables\ActivityInstance.sql" />
+    <Build Include="Tables\ProcessInstance.sql" />
+    <Build Include="StoredProcedures\AttachActivityInstanceToProcessInstance.sql" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="Tables\ActivityDetectionRule.sql" />

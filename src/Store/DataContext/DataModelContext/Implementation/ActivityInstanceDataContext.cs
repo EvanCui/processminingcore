@@ -1,5 +1,6 @@
 ﻿using Encoo.ProcessMining.DataContext.DatabaseContext;
 using Encoo.ProcessMining.DataContext.Model;
+using Microsoft.EntityFrameworkCore;
 
 namespace Encoo.ProcessMining.DataContext;
 
@@ -11,6 +12,9 @@ public class ActivityInstanceDataContext : IActivityInstanceDataContext
     {
         this.databaseContext = databaseContext;
     }
+
+    public Task<int> AttachToProcessInstancesAsync(long limitCount, CancellationToken token) =>
+        this.databaseContext.Database.ExecuteSqlRawAsync("AttachActivityInstanceToProcessInstance {0}", limitCount);
 
     public async Task SaveActivityInstancesAsync(IEnumerable<ActivityInstance> instances, CancellationToken cancellationToken)
     {

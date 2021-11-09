@@ -8,101 +8,60 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Encoo.ProcessMining.Engine;
 
-public class ActivityDetectionEngine
+public class ActivityDetectionEngine : EngineBase
 {
     private readonly ILogger<ActivityDetectionEngine> logger;
-    private readonly IServiceProvider serviceProvider;
     private readonly ActivityDetectionEngineOptions options;
     private readonly IKnowledgeBaseDataContext knowledgeBaseContext;
     private readonly IActivityDetectorsManager detectorsManager = new ActivityDetectorsManager();
     private KnowledgeBase knowledgeBase;
-    private TaskCompletionSource triggerExecute = new();
-    private readonly CancellationTokenSource cancelExecute = new();
+    private bool forceReload = true;
 
     public ActivityDetectionEngine(
         ILogger<ActivityDetectionEngine> logger,
         IOptions<ActivityDetectionEngineOptions> options,
         IServiceProvider serviceProvider,
         IKnowledgeBaseDataContext knowledgeBaseContext)
+        : base(logger, options, serviceProvider)
     {
         this.logger = logger;
-        this.serviceProvider = serviceProvider;
         this.options = options.Value;
         this.knowledgeBaseContext = knowledgeBaseContext;
     }
 
-    public void TriggerExecute()
+    protected override async Task<ExecuteUnitResult> ExecuteUnitAsync(IServiceProvider serviceProvider, CancellationToken token)
     {
-        this.triggerExecute.SetResult();
-        this.triggerExecute = new TaskCompletionSource();
-    }
-
-    public Task StartAsync(CancellationToken token)
-    {
-        this.ExecuteAsync(token).FireAndForget();
-        return Task.CompletedTask;
-    }
-
-#pragma warning disable IDE0060 // Remove unused parameter
-    public Task StopAsync(CancellationToken token)
-#pragma warning restore IDE0060 // Remove unused parameter
-    {
-        this.cancelExecute.Cancel();
-        return Task.CompletedTask;
-    }
-
-    private async Task ExecuteAsync(CancellationToken token)
-    {
-        token = CancellationTokenSource.CreateLinkedTokenSource(token, this.cancelExecute.Token).Token;
-        bool forceReload = true;
-        while (!token.IsCancellationRequested)
+        try
         {
-            var trigger = this.triggerExecute;
-            var scope = this.serviceProvider.CreateScope();
-            var waitSeconds = 0;
+            this.knowledgeBase = await this.knowledgeBaseContext.GetKnowledgeBaseAsync(this.forceReload, token);
+            this.forceReload = false;
 
-            try
-            {
-                this.knowledgeBase = await this.knowledgeBaseContext.GetKnowledgeBaseAsync(forceReload, token);
-                forceReload = false;
+            this.detectorsManager.Initialize(this.knowledgeBase.FlattenedDefinitions);
 
-                this.detectorsManager.Initialize(this.knowledgeBase.FlattenedDefinitions);
+            var dataRecordDataContext = serviceProvider.GetRequiredService<IDataRecordDataContext>();
 
-                var dataRecordDataContext = scope.ServiceProvider.GetRequiredService<IDataRecordDataContext>();
+            var records = await dataRecordDataContext.LoadDataRecordToDetectAsync(
+                this.knowledgeBase.Watermark,
+                this.options.BatchLoadingSize,
+                token).ToListAsync(token);
 
-                var records = await dataRecordDataContext.LoadDataRecordToDetectAsync(
-                    this.knowledgeBase.Watermark,
-                    this.options.BatchLoadingSize,
-                    token).ToListAsync(token);
+            var workItemSize = records.Count / Environment.ProcessorCount;
+            workItemSize = Math.Max(1, workItemSize);
+            workItemSize = Math.Min(this.options.MaxWorkItemSize, workItemSize);
 
-                var workItemSize = records.Count / Environment.ProcessorCount;
-                workItemSize = Math.Max(1, workItemSize);
-                workItemSize = Math.Min(this.options.MaxWorkItemSize, workItemSize);
+            var recordGroups = Enumerable.Range(0, records.Count).GroupBy(i => i / workItemSize, i => records[i]);
 
-                var recordGroups = Enumerable.Range(0, records.Count).GroupBy(i => i / workItemSize, i => records[i]);
+            var results = await Task.WhenAll(recordGroups.Select(recordGroup => Task.Run(() => this.Detect(recordGroup))));
 
-                var results = await Task.WhenAll(recordGroups.Select(recordGroup => Task.Run(() => this.Detect(recordGroup))));
+            var activityInstanceDataContext = serviceProvider.GetRequiredService<IActivityInstanceDataContext>();
+            await activityInstanceDataContext.SaveActivityInstancesAsync(results.SelectMany(r => r).Where(r => r.ActivityInstance != null).Select(r => r.ActivityInstance), token);
 
-                var activityInstanceDataContext = scope.ServiceProvider.GetRequiredService<IActivityInstanceDataContext>();
-                await activityInstanceDataContext.SaveActivityInstancesAsync(results.SelectMany(r => r).Where(r => r.ActivityInstance != null).Select(r => r.ActivityInstance), token);
-
-                if (records.Count == 0)
-                {
-                    waitSeconds = this.options.DetectionIntervalSeconds;
-                }
-            }
-            catch (Exception ex)
-            {
-                this.logger.LogError("Exception happened {ex}", ex);
-                forceReload = true;
-                waitSeconds = this.options.ErrorRetryIntervalSeconds;
-            }
-            finally
-            {
-                scope.Dispose();
-            }
-
-            await Task.WhenAny(Task.Delay(TimeSpan.FromSeconds(waitSeconds), token), trigger.Task);
+            return new ExecuteUnitResult(records.Count == 0 ? ExecuteUnitResultType.NoWorkToDo : ExecuteUnitResultType.MoreWorkToDo, null);
+        }
+        catch (Exception ex)
+        {
+            this.forceReload = true;
+            return new ExecuteUnitResult(ExecuteUnitResultType.ExceptionHappened, ex);
         }
     }
 

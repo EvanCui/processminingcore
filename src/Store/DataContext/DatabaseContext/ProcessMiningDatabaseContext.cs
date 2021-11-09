@@ -22,6 +22,7 @@ namespace Encoo.ProcessMining.DataContext.DatabaseContext
         public virtual DbSet<ActivityDetectionRule> ActivityDetectionRules { get; set; }
         public virtual DbSet<ActivityInstance> ActivityInstances { get; set; }
         public virtual DbSet<DataRecord> DataRecords { get; set; }
+        public virtual DbSet<ProcessInstance> ProcessInstances { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -60,7 +61,7 @@ namespace Encoo.ProcessMining.DataContext.DatabaseContext
             {
                 entity.ToTable("ActivityInstance");
 
-                entity.HasIndex(e => new { e.ProcessSubject, e.Time, e.Id }, "IX_ActivityInstance_ProcessSubject_Time_Id");
+                entity.HasIndex(e => new { e.ProcessInstanceId, e.ProcessSubject }, "IX_ActivityInstance_ProcessInstanceId_ProcessSubject");
 
                 entity.Property(e => e.Actor).HasMaxLength(50);
 
@@ -98,6 +99,22 @@ namespace Encoo.ProcessMining.DataContext.DatabaseContext
                 entity.Property(e => e.Parameters).HasColumnType("text");
 
                 entity.Property(e => e.Template).HasColumnType("text");
+            });
+
+            modelBuilder.Entity<ProcessInstance>(entity =>
+            {
+                entity.ToTable("ProcessInstance");
+
+                entity.HasIndex(e => e.Subject, "IX_ProcessInstance_Subject")
+                    .IsUnique();
+
+                entity.Property(e => e.Subject)
+                    .IsRequired()
+                    .HasMaxLength(200);
+
+                entity.Property(e => e.Thumbprint)
+                    .IsRequired()
+                    .HasMaxLength(2000);
             });
 
             OnModelCreatingPartial(modelBuilder);

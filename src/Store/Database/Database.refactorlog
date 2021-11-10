@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Operations Version="1.0" xmlns="http://schemas.microsoft.com/sqlserver/dac/Serialization/2012/02">
+  <Operation Name="Rename Refactor" Key="92b86fa9-f871-40cd-8d0c-c12dcd1e23f6" ChangeDateTime="11/09/2021 23:57:00">
+    <Property Name="ElementName" Value="[dbo].[ProcessInstance].[IsClassified]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ProcessInstance]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="IsGrouped" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="3ccb9c37-077d-47a6-9471-3d6cfcbd6091" ChangeDateTime="11/09/2021 23:58:05">
+    <Property Name="ElementName" Value="[dbo].[ProcessInstance].[ProcessClassificationId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ProcessInstance]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="ProcessGroupId" />
+  </Operation>
+</Operations>

@@ -8,7 +8,8 @@ public class ProcessMiningEngine : EngineBase
     private readonly ILogger<ProcessMiningEngine> logger;
     private readonly IOptions<ProcessMiningEngineOptions> options;
     private readonly IProcessInstanceDetector processInstanceDetector;
-    private readonly IProcessClassifier processClassifier;
+    private readonly IProcessThumbprintIdentifier processClassifier;
+    private readonly IProcessGroupDetector processGroupDetector;
     private readonly IProcessAnalyzer processAnalyzer;
 
     public ProcessMiningEngine(
@@ -16,7 +17,8 @@ public class ProcessMiningEngine : EngineBase
         IOptions<ProcessMiningEngineOptions> options,
         IServiceProvider serviceProvider,
         IProcessInstanceDetector processInstanceDetector,
-        IProcessClassifier processClassifier,
+        IProcessThumbprintIdentifier processClassifier,
+        IProcessGroupDetector processGroupDetector,
         IProcessAnalyzer processAnalyzer)
         : base(logger, options, serviceProvider)
     {
@@ -24,6 +26,7 @@ public class ProcessMiningEngine : EngineBase
         this.options = options;
         this.processInstanceDetector = processInstanceDetector;
         this.processClassifier = processClassifier;
+        this.processGroupDetector = processGroupDetector;
         this.processAnalyzer = processAnalyzer;
     }
 
@@ -39,8 +42,16 @@ public class ProcessMiningEngine : EngineBase
                 return result;
             }
 
-            // step 2, classify process
-            result = await this.processClassifier.ClassifyAsync(token);
+            // step 2, Identify process thumbprint.
+            result = await this.processClassifier.IdentifyAsync(token);
+
+            if (result.Type != ExecuteUnitResultType.NoWorkToDo)
+            {
+                return result;
+            }
+
+            // step 3, Detect process group.
+            result = await this.processGroupDetector.DetectAsync(token);
 
             if (result.Type != ExecuteUnitResultType.NoWorkToDo)
             {

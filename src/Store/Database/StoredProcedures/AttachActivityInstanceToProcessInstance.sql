@@ -1,9 +1,4 @@
-﻿/*
-The database must have a MEMORY_OPTIMIZED_DATA filegroup
-before the memory optimized object can be created.
-*/
-
-CREATE PROCEDURE [dbo].[AttachActivityInstanceToProcessInstance]
+﻿CREATE PROCEDURE [dbo].[AttachActivityInstanceToProcessInstance]
 	@batchSize int = 1000
 AS BEGIN
 
@@ -25,8 +20,15 @@ AS BEGIN
 	WHERE ai.ProcessInstanceId IS NULL
 
 	UPDATE ProcessInstance
-	SET IsClassified = 0
+	SET IsGrouped = 0, IsAnalyzed = 0, Thumbprint = NULL
 	WHERE Id IN (SELECT Id FROM @attached)
+
+	UPDATE pg
+	SET pg.IsAnalyzed = 0
+	FROM ProcessGroup pg
+	JOIN ProcessInstance pi
+	ON pg.Id = pi.ProcessGroupId
+	WHERE pi.Id IN (SELECT Id FROM @attached)
 
 	RETURN 0
 END

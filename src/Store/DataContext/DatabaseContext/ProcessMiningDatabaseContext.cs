@@ -22,6 +22,8 @@ namespace Encoo.ProcessMining.DataContext.DatabaseContext
         public virtual DbSet<ActivityDetectionRule> ActivityDetectionRules { get; set; }
         public virtual DbSet<ActivityInstance> ActivityInstances { get; set; }
         public virtual DbSet<DataRecord> DataRecords { get; set; }
+        public virtual DbSet<ProcessCluster> ProcessClusters { get; set; }
+        public virtual DbSet<ProcessDefinition> ProcessDefinitions { get; set; }
         public virtual DbSet<ProcessGroup> ProcessGroups { get; set; }
         public virtual DbSet<ProcessInstance> ProcessInstances { get; set; }
 
@@ -33,9 +35,17 @@ namespace Encoo.ProcessMining.DataContext.DatabaseContext
             {
                 entity.ToTable("ActivityDefinition");
 
+                entity.HasIndex(e => e.ProcessDefinitionId, "IX_ActivityDefinition_ProcessDefinitionId");
+
                 entity.Property(e => e.Details).HasMaxLength(1000);
 
                 entity.Property(e => e.Name).HasMaxLength(50);
+
+                entity.HasOne(d => d.ProcessDefinition)
+                    .WithMany(p => p.ActivityDefinitions)
+                    .HasForeignKey(d => d.ProcessDefinitionId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ActivityDefinition_ProcessDefinition");
             });
 
             modelBuilder.Entity<ActivityDetectionRule>(entity =>
@@ -108,6 +118,29 @@ namespace Encoo.ProcessMining.DataContext.DatabaseContext
                 entity.Property(e => e.Template).HasColumnType("text");
             });
 
+            modelBuilder.Entity<ProcessCluster>(entity =>
+            {
+                entity.ToTable("ProcessCluster");
+
+                entity.HasIndex(e => e.Thumbprint, "IX_ProcessCluster_Thumbprint")
+                    .IsUnique();
+
+                entity.Property(e => e.Name).HasMaxLength(50);
+
+                entity.Property(e => e.Thumbprint)
+                    .IsRequired()
+                    .HasMaxLength(100);
+            });
+
+            modelBuilder.Entity<ProcessDefinition>(entity =>
+            {
+                entity.ToTable("ProcessDefinition");
+
+                entity.Property(e => e.Details).HasMaxLength(1000);
+
+                entity.Property(e => e.Name).HasMaxLength(50);
+            });
+
             modelBuilder.Entity<ProcessGroup>(entity =>
             {
                 entity.ToTable("ProcessGroup");
@@ -128,7 +161,7 @@ namespace Encoo.ProcessMining.DataContext.DatabaseContext
             {
                 entity.ToTable("ProcessInstance");
 
-                entity.HasIndex(e => e.IsGrouped, "IX_ProcessInstance_IsClassified");
+                entity.HasIndex(e => new { e.IsClustered, e.Thumbprint }, "IX_ProcessInstance_IsGrouped_Thumbprint");
 
                 entity.HasIndex(e => e.Subject, "IX_ProcessInstance_Subject")
                     .IsUnique();
@@ -141,10 +174,10 @@ namespace Encoo.ProcessMining.DataContext.DatabaseContext
                     .IsRequired()
                     .HasMaxLength(100);
 
-                entity.HasOne(d => d.ProcessGroup)
+                entity.HasOne(d => d.ProcessCluster)
                     .WithMany(p => p.ProcessInstances)
-                    .HasForeignKey(d => d.ProcessGroupId)
-                    .HasConstraintName("FK_ProcessInstance_ProcessGroup");
+                    .HasForeignKey(d => d.ProcessClusterId)
+                    .HasConstraintName("FK_ProcessInstance_ProcessCluster");
             });
 
             OnModelCreatingPartial(modelBuilder);

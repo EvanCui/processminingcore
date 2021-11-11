@@ -1,9 +1,12 @@
-﻿namespace Encoo.ProcessMining.Utilities
+﻿namespace Encoo.ProcessMining.Utilities;
+
+public static class TaskExtensions
 {
-    public static class TaskExtensions
+    public static void FireAndForget(this Task t)
     {
-#pragma warning disable IDE0060 // Remove unused parameter
-        public static void FireAndForget(this Task t) { }
-#pragma warning restore IDE0060 // Remove unused parameter
+        if (t is null)
+        {
+            throw new ArgumentNullException(nameof(t));
+        }
     }
 }

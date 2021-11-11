@@ -1,6 +1,5 @@
 ﻿namespace Encoo.ProcessMining.Engine;
 
-public interface IProcessAnalyzer
+public interface IProcessAnalyzer : IEngineComponent
 {
-    Task<ExecuteUnitResult> AnalyzeAsync(CancellationToken token);
 }

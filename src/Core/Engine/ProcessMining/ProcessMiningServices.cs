@@ -1,16 +1,24 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Encoo.ProcessMining.DataContext;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace Encoo.ProcessMining.Engine
+namespace Encoo.ProcessMining.Engine;
+
+public static class ProcessMiningServices
 {
-    public static class ProcessMiningServices
+    public static IServiceCollection AddProcessMiningServices(this IServiceCollection serviceCollection)
     {
-        public static IServiceCollection AddProcessMiningServices(this IServiceCollection serviceCollection) =>
-            serviceCollection.AddSingleton<IEngine, ProcessMiningEngine>()
-                .AddSingleton<IProcessInstanceDetector, ProcessInstanceDetector>();
+        serviceCollection.AddOptions<ProcessMiningEngineOptions>();
+        serviceCollection.AddOptions<EngineControllerOptions>();
+
+        return serviceCollection
+            .AddDataModelContextServices()
+            .AddActivityDetectionServices()
+            .AddInstantiationServices()
+            .AddClassificationServices()
+            .AddClusterizationServices()
+            .AddProcessAnalyzerServices()
+            .AddScoped<IEngine, ProcessMiningEngine>()
+            .AddTransient<IEngineBuilder, ProcessMiningEngineBuilder>()
+            .AddSingleton<IEngineController, EngineController<ProcessMiningEngineBuilder>>();
     }
 }

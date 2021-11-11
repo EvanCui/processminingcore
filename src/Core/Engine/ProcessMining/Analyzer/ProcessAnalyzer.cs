@@ -2,7 +2,9 @@
 
 public class ProcessAnalyzer : IProcessAnalyzer
 {
-    public Task<ExecuteUnitResult> AnalyzeAsync(CancellationToken token)
+    public string Name => nameof(ProcessAnalyzer);
+
+    public Task<RunResult> RunAsync(int batchSize, CancellationToken token)
     {
         throw new NotImplementedException();
     }

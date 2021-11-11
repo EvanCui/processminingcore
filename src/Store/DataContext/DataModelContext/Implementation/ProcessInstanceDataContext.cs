@@ -20,7 +20,7 @@ public class ProcessInstanceDataContext : IProcessInstanceDataContext
     public async Task<int> SaveProcessThumbprintsAsync(IDictionary<long, string> thumbprints, CancellationToken cancellationToken)
     {
         var processInstances = await this.databaseContext.ProcessInstances.AsQueryable()
-            .Where(pi => pi.IsGrouped == false)
+            .Where(pi => pi.IsClustered == false)
             .ToListAsync(cancellationToken);
 
         processInstances.ForEach(p =>

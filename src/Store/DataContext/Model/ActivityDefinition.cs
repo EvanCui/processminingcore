@@ -15,7 +15,9 @@ namespace Encoo.ProcessMining.DataContext.Model
         public long Id { get; set; }
         public string Name { get; set; }
         public string Details { get; set; }
+        public long ProcessDefinitionId { get; set; }
 
+        public virtual ProcessDefinition ProcessDefinition { get; set; }
         public virtual ActivityDetectionRule ActivityDetectionRule { get; set; }
         public virtual ICollection<ActivityInstance> ActivityInstances { get; set; }
     }

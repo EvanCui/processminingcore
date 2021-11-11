@@ -14,4 +14,25 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="ProcessGroupId" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="f7f75587-b270-4837-b4d0-d0cdfa64a602" ChangeDateTime="11/10/2021 23:00:03">
+    <Property Name="ElementName" Value="[dbo].[ProcessInstance].[ProcessGroupId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ProcessInstance]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="ProcessClusterId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="37c0b926-62ab-4afe-b273-9ec7ac60c4cd" ChangeDateTime="11/10/2021 23:00:17">
+    <Property Name="ElementName" Value="[dbo].[ProcessInstance].[IsGrouped]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ProcessInstance]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="IsClustered" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="d65dfb5d-2dac-49cf-baf9-1b8a4c3b7a6f" ChangeDateTime="11/10/2021 23:04:36">
+    <Property Name="ElementName" Value="[dbo].[ProcessClusterActivityDefinitionRelationship].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ProcessClusterActivityDefinitionRelationship]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="ProcessClusterId" />
+  </Operation>
 </Operations>

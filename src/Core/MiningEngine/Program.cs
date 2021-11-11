@@ -10,14 +10,11 @@ var builder = WebApplication.CreateBuilder(args);
 
 // data contexts
 builder.Services.AddDbContext<ProcessMiningDatabaseContext>(o => o.UseSqlServer(builder.Configuration.GetConnectionString("SqlServer")));
-builder.Services.AddSingleton<IKnowledgeBaseDataContext, KnowledgeBaseDataContext>();
-builder.Services.AddScoped<IDataRecordDataContext, DataRecordDataContext>();
-builder.Services.AddScoped<IActivityInstanceDataContext, ActivityInstanceDataContext>();
+builder.Services.AddDataModelContextServices();
 
 // hosted service
-builder.Services.AddOptions<ActivityDetectionEngineOptions>();
-builder.Services.AddScoped<ActivityDetectionEngine>();
-builder.Services.AddHostedService<ActivityDetectionService>();
+builder.Services.AddProcessMiningServices();
+builder.Services.AddHostedService<ProcessMiningService>();
 
 // controllers
 builder.Services.AddControllers();

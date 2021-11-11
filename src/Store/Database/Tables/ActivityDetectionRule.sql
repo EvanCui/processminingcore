@@ -5,7 +5,7 @@
     [Priority] INT NOT NULL DEFAULT 0, 
     [RuleData] TEXT NULL, 
     [ActivityDefinitionId] BIGINT NOT NULL, 
-    CONSTRAINT [FK_ActivityDetectionRule_ActivityDefinition] FOREIGN KEY ([ActivityDefinitionId]) REFERENCES [ActivityDefinition]([Id])
+    CONSTRAINT [FK_ActivityDetectionRule_ActivityDefinition] FOREIGN KEY ([ActivityDefinitionId]) REFERENCES [ActivityDefinition]([Id]) ON DELETE CASCADE
 )
 
 GO

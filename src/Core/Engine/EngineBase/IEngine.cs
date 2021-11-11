@@ -1,8 +1,8 @@
 ﻿namespace Encoo.ProcessMining.Engine;
 
-internal interface IEngine
+public interface IEngine
 {
-    Task StartAsync(CancellationToken token);
-    Task StopAsync(CancellationToken token);
-    void TriggerExecute();
+    IList<IEngineComponent> EngineComponents { get; }
+
+    Task<RunResult> RunAsync(CancellationToken token);
 }

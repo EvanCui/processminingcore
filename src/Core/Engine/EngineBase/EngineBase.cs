@@ -1,6 +1,4 @@
-﻿using Encoo.ProcessMining.Utilities;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Encoo.ProcessMining.Engine;
@@ -8,70 +6,43 @@ namespace Encoo.ProcessMining.Engine;
 public abstract class EngineBase : IEngine
 {
     private readonly ILogger<EngineBase> logger;
-    private readonly IOptions<EngineOptions> options;
-    private readonly IServiceProvider serviceProvider;
-    private readonly CancellationTokenSource cancelExecute = new();
-    private TaskCompletionSource trigger = new();
+    private readonly IOptions<EngineBaseOptions> options;
 
-    public EngineBase(ILogger<EngineBase> logger, IOptions<EngineOptions> options, IServiceProvider serviceProvider)
+    public EngineBase(ILogger<EngineBase> logger, IOptions<EngineBaseOptions> options)
     {
         this.logger = logger;
         this.options = options;
-        this.serviceProvider = serviceProvider;
     }
 
-    public Task StartAsync(CancellationToken token)
-    {
-        this.ExecuteAsync(token).FireAndForget();
-        return Task.CompletedTask;
-    }
+    public abstract IList<IEngineComponent> EngineComponents { get; init; }
 
-    public Task StopAsync(CancellationToken token)
+    public async Task<RunResult> RunAsync(CancellationToken cancellationToken)
     {
-        this.cancelExecute.Cancel();
-        return Task.CompletedTask;
-    }
+        var completedParts = 0;
 
-    public void TriggerExecute()
-    {
-        this.trigger.SetResult();
-        this.trigger = new TaskCompletionSource();
-    }
-
-    protected abstract Task<ExecuteUnitResult> ExecuteUnitAsync(IServiceProvider serviceProvider, CancellationToken token);
-
-    private async Task ExecuteAsync(CancellationToken token)
-    {
-        token = CancellationTokenSource.CreateLinkedTokenSource(token, this.cancelExecute.Token).Token;
-        while (!token.IsCancellationRequested)
+        try
         {
-            var triggerExecute = this.trigger;
-            var scope = this.serviceProvider.CreateScope();
-
-            ExecuteUnitResult result;
-
-            try
+            foreach (var engineComponent in EngineComponents)
             {
-                result = await this.ExecuteUnitAsync(scope.ServiceProvider, token);
-            }
-            finally
-            {
-                scope.Dispose();
-            }
+                var result = await engineComponent.RunAsync(this.options.Value.BatchSize, cancellationToken);
+                this.logger.LogInformation("Component {name} executed with result {result}", engineComponent.Name, result);
 
-            int waitSeconds = result.Type switch
-            {
-                ExecuteUnitResultType.NoWorkToDo => this.options.Value.IdleWaitSeconds,
-                ExecuteUnitResultType.ExceptionHappened => this.options.Value.ErrorWaitSeconds,
-                _ => 0,
-            };
+                if (result.Type != RunResultType.NoWorkToDo)
+                {
+                    completedParts++;
+                    return result with { Progress = this.GetProgress(completedParts) };
+                }
 
-            if (result.Type == ExecuteUnitResultType.ExceptionHappened)
-            {
-                this.logger.LogError("Exception captured {0}", result.Exception);
+                completedParts += 2;
             }
 
-            await Task.WhenAny(Task.Delay(TimeSpan.FromSeconds(waitSeconds), token), triggerExecute.Task);
+            return RunResult.Completed;
+        }
+        catch (Exception ex)
+        {
+            return new RunResult(RunResultType.ExceptionHappened,  this.GetProgress(completedParts), ex);
         }
     }
+
+    private int GetProgress(int completedParts) => 50 * completedParts / this.EngineComponents.Count;
 }

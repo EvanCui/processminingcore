@@ -69,8 +69,10 @@
     <Build Include="Tables\ActivityInstance.sql" />
     <Build Include="Tables\ProcessInstance.sql" />
     <Build Include="StoredProcedures\AttachActivityInstanceToProcessInstance.sql" />
-    <Build Include="Tables\ProcessGroup.sql" />
-    <Build Include="StoredProcedures\AttachProcessInstanceToProcessGroup.sql" />
+    <Build Include="Tables\ProcessCluster.sql" />
+    <Build Include="StoredProcedures\AttachProcessInstanceToProcessCluster.sql" />
+    <Build Include="Tables\ProcessDefinition.sql" />
+    <Build Include="Tables\ProcessClusterActivityDefinitionRelationship.sql" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="Tables\ActivityDetectionRule.sql" />

@@ -20,14 +20,14 @@ AS BEGIN
 	WHERE ai.ProcessInstanceId IS NULL
 
 	UPDATE ProcessInstance
-	SET IsGrouped = 0, IsAnalyzed = 0, Thumbprint = NULL
+	SET IsClustered = 0, IsAnalyzed = 0, Thumbprint = NULL
 	WHERE Id IN (SELECT Id FROM @attached)
 
-	UPDATE pg
-	SET pg.IsAnalyzed = 0
-	FROM ProcessGroup pg
+	UPDATE pc
+	SET pc.IsAnalyzed = 0
+	FROM ProcessCluster pc
 	JOIN ProcessInstance pi
-	ON pg.Id = pi.ProcessGroupId
+	ON pc.Id = pi.ProcessClusterId
 	WHERE pi.Id IN (SELECT Id FROM @attached)
 
 	RETURN 0

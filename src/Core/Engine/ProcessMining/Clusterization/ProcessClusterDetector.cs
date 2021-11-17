@@ -18,7 +18,7 @@ public class ProcessClusterDetector : IProcessClusterDetector
 
     public async Task<RunResult> RunAsync(int batchSize, CancellationToken token)
     {
-        var attachedCount = await this.processInstanceDataContext.AttachToProcessGroupsAsync(batchSize, token);
+        var attachedCount = await this.processInstanceDataContext.AttachToProcessClustersAsync(batchSize, token);
         return attachedCount == 0 ? RunResult.NoWorkToDo : RunResult.MoreWorkToDo;
     }
 }

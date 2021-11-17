@@ -12,7 +12,7 @@ public class ProcessInstanceDataContext : IProcessInstanceDataContext
         this.databaseContext = processMiningDatabaseContext;
     }
 
-    public Task<int> AttachToProcessGroupsAsync(long batchSize, CancellationToken token)
+    public Task<int> AttachToProcessClustersAsync(long batchSize, CancellationToken token)
     {
         throw new NotImplementedException();
     }

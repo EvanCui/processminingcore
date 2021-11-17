@@ -20,15 +20,17 @@ public class KnowledgeBaseDataContext : IKnowledgeBaseDataContext
         this.context = context;
     }
 
-    public async Task AddActivityDefinitionAsync(ActivityDefinition definition, CancellationToken token)
+    public async Task<ActivityDefinition> AddActivityDefinitionAsync(ActivityDefinition definition, CancellationToken token)
     {
         this.context.ActivityDefinitions.Add(definition);
         await this.context.SaveChangesAsync(token);
         this.reloadNeeded = true;
+        return definition;
     }
 
     public async Task<KnowledgeBase> GetKnowledgeBaseAsync(bool forceReload, CancellationToken token)
     {
+        // TODO: single load
         if (forceReload || this.reloadNeeded || this.knowledgeBase == null || DateTimeOffset.UtcNow - this.lastReloadTime > reloadInterval)
         {
             this.lastReloadTime = DateTimeOffset.UtcNow;
@@ -51,11 +53,12 @@ public class KnowledgeBaseDataContext : IKnowledgeBaseDataContext
     public Task InitializeAsync(CancellationToken token) =>
         this.GetKnowledgeBaseAsync(true, token);
 
-    public async Task RemoveActivityDefinitionAsync(long activityDefinitionId, CancellationToken token)
+    public async Task<bool> RemoveActivityDefinitionAsync(long activityDefinitionId, CancellationToken token)
     {
         this.context.ActivityDefinitions.Remove(new ActivityDefinition() { Id = activityDefinitionId });
-        await this.context.SaveChangesAsync(token);
+        var deletedCount = await this.context.SaveChangesAsync(token);
         this.reloadNeeded = true;
+        return deletedCount > 0;
     }
 
     public Task<long> GetKnowledgeWatermarkAsync(CancellationToken token)

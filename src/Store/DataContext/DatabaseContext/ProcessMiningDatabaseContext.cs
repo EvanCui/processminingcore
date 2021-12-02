@@ -1,9 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Encoo.ProcessMining.DataContext.Model;
-
-#nullable disable
 
 namespace Encoo.ProcessMining.DataContext.DatabaseContext
 {
@@ -23,14 +22,13 @@ namespace Encoo.ProcessMining.DataContext.DatabaseContext
         public virtual DbSet<ActivityInstance> ActivityInstances { get; set; }
         public virtual DbSet<DataRecord> DataRecords { get; set; }
         public virtual DbSet<ProcessCluster> ProcessClusters { get; set; }
+        public virtual DbSet<ProcessClusterActivityDefinitionRelationship> ProcessClusterActivityDefinitionRelationships { get; set; }
         public virtual DbSet<ProcessDefinition> ProcessDefinitions { get; set; }
         public virtual DbSet<ProcessGroup> ProcessGroups { get; set; }
         public virtual DbSet<ProcessInstance> ProcessInstances { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.HasAnnotation("Relational:Collation", "SQL_Latin1_General_CP1_CI_AS");
-
             modelBuilder.Entity<ActivityDefinition>(entity =>
             {
                 entity.ToTable("ActivityDefinition");
@@ -44,7 +42,6 @@ namespace Encoo.ProcessMining.DataContext.DatabaseContext
                 entity.HasOne(d => d.ProcessDefinition)
                     .WithMany(p => p.ActivityDefinitions)
                     .HasForeignKey(d => d.ProcessDefinitionId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_ActivityDefinition_ProcessDefinition");
             });
 
@@ -64,7 +61,6 @@ namespace Encoo.ProcessMining.DataContext.DatabaseContext
                 entity.HasOne(d => d.ActivityDefinition)
                     .WithOne(p => p.ActivityDetectionRule)
                     .HasForeignKey<ActivityDetectionRule>(d => d.ActivityDefinitionId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_ActivityDetectionRule_ActivityDefinition");
             });
 
@@ -83,7 +79,6 @@ namespace Encoo.ProcessMining.DataContext.DatabaseContext
                 entity.HasOne(d => d.ActivityDefinition)
                     .WithMany(p => p.ActivityInstances)
                     .HasForeignKey(d => d.ActivityDefinitionId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_ActivityInstance_ActivityDefinition");
 
                 entity.HasOne(d => d.DataRecord)
@@ -132,6 +127,28 @@ namespace Encoo.ProcessMining.DataContext.DatabaseContext
                     .HasMaxLength(100);
             });
 
+            modelBuilder.Entity<ProcessClusterActivityDefinitionRelationship>(entity =>
+            {
+                entity.HasKey(e => e.ProcessClusterId)
+                    .HasName("PK__ProcessC__76FFA923509B8EDF");
+
+                entity.ToTable("ProcessClusterActivityDefinitionRelationship");
+
+                entity.HasIndex(e => e.ActivityDefinitionId, "IX_ProcessClusterActivityDefinitionRelationship_ActivityDefinitionId");
+
+                entity.Property(e => e.ProcessClusterId).ValueGeneratedNever();
+
+                entity.HasOne(d => d.ActivityDefinition)
+                    .WithMany(p => p.ProcessClusterActivityDefinitionRelationships)
+                    .HasForeignKey(d => d.ActivityDefinitionId)
+                    .HasConstraintName("FK_ProcessClusterActivityDefinitionRelationship_ActivityDefinition");
+
+                entity.HasOne(d => d.ProcessCluster)
+                    .WithOne(p => p.ProcessClusterActivityDefinitionRelationship)
+                    .HasForeignKey<ProcessClusterActivityDefinitionRelationship>(d => d.ProcessClusterId)
+                    .HasConstraintName("FK_ProcessClusterActivityDefinitionRelationship_ProcessCluster");
+            });
+
             modelBuilder.Entity<ProcessDefinition>(entity =>
             {
                 entity.ToTable("ProcessDefinition");
@@ -177,6 +194,7 @@ namespace Encoo.ProcessMining.DataContext.DatabaseContext
                 entity.HasOne(d => d.ProcessCluster)
                     .WithMany(p => p.ProcessInstances)
                     .HasForeignKey(d => d.ProcessClusterId)
+                    .OnDelete(DeleteBehavior.SetNull)
                     .HasConstraintName("FK_ProcessInstance_ProcessCluster");
             });
 

@@ -18,7 +18,7 @@ public static class ProcessMiningServices
             .AddClusterizationServices()
             .AddProcessAnalyzerServices()
             .AddScoped<IEngine, ProcessMiningEngine>()
-            .AddTransient<IEngineBuilder, ProcessMiningEngineBuilder>()
+            .AddTransient<ProcessMiningEngineBuilder>()
             .AddSingleton<IEngineController, EngineController<ProcessMiningEngineBuilder>>();
     }
 }

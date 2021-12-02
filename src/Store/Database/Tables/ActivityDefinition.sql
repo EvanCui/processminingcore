@@ -4,7 +4,7 @@
     [Name] NVARCHAR(50) NULL, 
     [Details] NVARCHAR(1000) NULL, 
     [ProcessDefinitionId] BIGINT NOT NULL, 
-    CONSTRAINT [FK_ActivityDefinition_ProcessDefinition] FOREIGN KEY ([ProcessDefinitionId]) REFERENCES [ProcessDefinition]([Id])
+    CONSTRAINT [FK_ActivityDefinition_ProcessDefinition] FOREIGN KEY ([ProcessDefinitionId]) REFERENCES [ProcessDefinition]([Id]) ON DELETE CASCADE
 )
 
 GO

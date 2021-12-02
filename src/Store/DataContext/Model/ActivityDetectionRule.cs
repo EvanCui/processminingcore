@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 
-#nullable disable
-
 namespace Encoo.ProcessMining.DataContext.Model
 {
     public partial class ActivityDetectionRule

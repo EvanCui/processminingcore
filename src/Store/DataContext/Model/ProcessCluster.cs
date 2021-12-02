@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 
-#nullable disable
-
 namespace Encoo.ProcessMining.DataContext.Model
 {
     public partial class ProcessCluster
@@ -17,6 +15,7 @@ namespace Encoo.ProcessMining.DataContext.Model
         public string Name { get; set; }
         public bool IsAnalyzed { get; set; }
 
+        public virtual ProcessClusterActivityDefinitionRelationship ProcessClusterActivityDefinitionRelationship { get; set; }
         public virtual ICollection<ProcessInstance> ProcessInstances { get; set; }
     }
 }

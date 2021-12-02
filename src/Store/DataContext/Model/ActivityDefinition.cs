@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 
-#nullable disable
-
 namespace Encoo.ProcessMining.DataContext.Model
 {
     public partial class ActivityDefinition
@@ -10,6 +8,7 @@ namespace Encoo.ProcessMining.DataContext.Model
         public ActivityDefinition()
         {
             ActivityInstances = new HashSet<ActivityInstance>();
+            ProcessClusterActivityDefinitionRelationships = new HashSet<ProcessClusterActivityDefinitionRelationship>();
         }
 
         public long Id { get; set; }
@@ -20,5 +19,6 @@ namespace Encoo.ProcessMining.DataContext.Model
         public virtual ProcessDefinition ProcessDefinition { get; set; }
         public virtual ActivityDetectionRule ActivityDetectionRule { get; set; }
         public virtual ICollection<ActivityInstance> ActivityInstances { get; set; }
+        public virtual ICollection<ProcessClusterActivityDefinitionRelationship> ProcessClusterActivityDefinitionRelationships { get; set; }
     }
 }
